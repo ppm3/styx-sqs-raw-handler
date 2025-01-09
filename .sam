@@ -1,0 +1,12 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = ""
+resolve_s3 = true
+s3_prefix = ""
+region = ""
+profile = ""
+confirm_changeset = true
+capabilities = "CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND"
+disable_rollback = false
+parameter_overrides = ""
+image_repositories = []

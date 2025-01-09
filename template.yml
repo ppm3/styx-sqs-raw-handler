@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+
+Parameters:
+  Owner:
+    Type: String
+    Description: "Owner of the resource"
+    Default: PPM3
+  ProjectName:
+    Type: String
+    Description: "Name of the project"
+    Default: atlas-crafter
+  Env:
+    Type: String
+    Description: "Environment (e.g., dev, stage, prod)"
+    Default: "dev"
+    AllowedValues:
+      - dev
+      - stage
+      - production
+
+Description: >
+  Sytx sqs raw queue handler stack for Atlas Crafter
+
+Resources:
+  # Add the Raw Messages resources
+  SqsRawMessages:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${ProjectName}_rm.fifo"
+      FifoQueue: true
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt SqsRawMessagesDLQ.Arn
+        maxReceiveCount: 3
+      Tags:
+        - Key: Owner
+          Value: !Ref Owner
+        - Key: ProjectName
+          Value: !Ref ProjectName
+        - Key: Env
+          Value: !Ref Env
+
+  SqsRawMessagesDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${ProjectName}_rm_DLQ.fifo"
+      FifoQueue: true
+      Tags:
+        - Key: Owner
+          Value: !Ref Owner
+        - Key: ProjectName
+          Value: !Ref ProjectName
+        - Key: Env
+          Value: !Ref Env
+Outputs:
+  # Add the Raw Messages outputs
+  SqsRawMessagesName:
+    Description: "SQS Name for Raw Messages"
+    Value: !GetAtt SqsRawMessages.QueueName
+    Export:
+      Name: !Sub "${ProjectName}-sqs-raw-messages-name"
+  SqsRawMessagesURL:
+    Description: "SQS URL for Raw Messages"
+    Value: !Ref SqsRawMessages
+    Export:
+      Name: !Sub "${ProjectName}-sqs-raw-messages-url"
+  SqsRawMessagesArn:
+    Description: "SQS ARN for Raw Messages"
+    Value: !GetAtt SqsRawMessages.Arn
+    Export:
+      Name: !Sub "${ProjectName}-sqs-raw-messages-arn"
+  SqsRawMessagesDLQName:
+    Description: "SQS Name for Raw Messages DLQ"
+    Value: !GetAtt SqsRawMessagesDLQ.QueueName
+    Export:
+      Name: !Sub "${ProjectName}-sqs-raw-messages-dlq-name"
+  SqsRawMessagesDLQURL:
+    Description: "SQS URL for Raw Messages DLQ"
+    Value: !Ref SqsRawMessagesDLQ
+    Export:
+      Name: !Sub "${ProjectName}-sqs-raw-messages-dlq-url"
+  SqsRawMessagesDLQArn:
+    Description: "SQS ARN for Raw Messages DLQ"
+    Value: !GetAtt SqsRawMessagesDLQ.Arn
+    Export:
+      Name: !Sub "${ProjectName}-sqs-raw-messages-dlq-arn"

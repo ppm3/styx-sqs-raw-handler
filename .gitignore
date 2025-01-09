@@ -1,0 +1,9 @@
+# Ignore local build artifacts
+.aws-sam
+.aws-sam/*
+.venv
+.venv/*
+
+samconfig.toml
+
+.layer_hash
