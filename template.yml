@@ -29,6 +29,7 @@ Resources:
     Properties:
       QueueName: !Sub "${ProjectName}_rm.fifo"
       FifoQueue: true
+      VisibilityTimeout: 30
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt SqsRawMessagesDLQ.Arn
         maxReceiveCount: 3
